@@ -1,0 +1,51 @@
+=== TAMANHO DOS ARQUIVOS ===
+compras.csv ....... 2042 linhas
+itens.csv ......... 7077 linhas
+resultados.csv .... 15896 linhas
+numero_controle_pncp repetido em compras: 0
+item repetido em itens (pncp + numero_item): 0
+
+=== 1) DOCUMENTOS (CNPJ/CPF) ===
+cnpj_orgao com mascara (. / -) ....... 176
+cnpj_orgao que perdeu zero ........... 77
+ni_fornecedor com mascara ............ 1633
+ni_fornecedor PJ que perdeu zero ..... 194
+ni_fornecedor PF que perdeu zero ..... 159
+ni_fornecedor vazio/nulo disfarcado .. 0
+tipos de pessoa: {'PJ': 11344, 'PF': 4531, 'PE': 21}
+
+=== 2) DINHEIRO E NUMEROS EM TEXTO ===
+itens.quantidade: com R$/virgula/parenteses = 1481 | negativo entre parenteses = 0 | nulo disfarcado = 0 | vazio = 0
+itens.valor_unitario_estimado: com R$/virgula/parenteses = 1602 | negativo entre parenteses = 0 | nulo disfarcado = 0 | vazio = 0
+itens.valor_total_estimado: com R$/virgula/parenteses = 1662 | negativo entre parenteses = 0 | nulo disfarcado = 0 | vazio = 0
+resultados.quantidade_homologada: com R$/virgula/parenteses = 3424 | negativo entre parenteses = 0 | nulo disfarcado = 0 | vazio = 0
+resultados.valor_unitario_homologado: com R$/virgula/parenteses = 3614 | negativo entre parenteses = 0 | nulo disfarcado = 0 | vazio = 0
+resultados.valor_total_homologado: com R$/virgula/parenteses = 3832 | negativo entre parenteses = 0 | nulo disfarcado = 0 | vazio = 0
+
+=== 3) DATAS ===
+compras.data_publicacao: {'AAAA-MM-DDThh:mm:ss': 1319, 'DD-MM-AAAA': 138, 'DD/MM/AAAA hh:mm': 126, 'DD.MM.AAAA': 120, 'DD/MM/AAAA': 117, 'AAAA/MM/DD': 116, 'AAAAMMDD': 106}
+resultados.data_resultado: {'AAAA-MM-DD': 10301, 'AAAA/MM/DD': 960, 'DD.MM.AAAA': 937, 'DD/MM/AAAA hh:mm': 934, 'DD/MM/AAAA': 929, 'AAAAMMDD': 923, 'DD-MM-AAAA': 912}
+resultados com homologacao ANTES da publicacao: 234
+datas impossiveis ou fora de 2000-2030 (viram vazio): 0
+
+=== 4) NULOS DISFARCADOS (N/A, -, NULL, SEM INFORMACAO, 0 em texto...) ===
+compras: {'processo': 77, 'modo_disputa': 967}
+itens: {'categoria_item': 7077, 'situacao_item': 220, 'criterio_julgamento': 1883}
+resultados: {'porte': 4893}
+
+=== 5) TEXTO: ACENTO QUEBRADO E NOMES DIFERENTES ===
+compras.razao_social_orgao: acento quebrado = 0
+compras.nome_unidade: acento quebrado = 176
+compras.objeto_compra: acento quebrado = 173
+compras.uf_nome: acento quebrado = 0
+itens.descricao: acento quebrado = 223
+resultados.nome_fornecedor: acento quebrado = 4
+nomes de orgao distintos: 440 escritos no arquivo -> 352 depois de padronizar
+modalidade_nome escrita de 7 jeitos para 7 modalidades
+uf_sigla escrita de 27 jeitos -> 27 UFs depois de padronizar
+
+=== OUTRAS COISAS QUE CHAMARAM ATENCAO ===
+itens sigilosos: 54
+categoria_item: {'Não se aplica': 7077}  (nao ajuda em nada)
+resultados cancelados: 62
+ordem_classificacao_srp vazia: 11976
