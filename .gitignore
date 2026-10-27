@@ -1,0 +1,19 @@
+# credenciais (NUNCA versionar)
+.env
+
+# dados: grandes e regeneraveis pelo pipeline
+data/processed/*
+reports/*.log
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# power bi
+.pbi/
+*.pbix.bak
+powerbi/**/localSettings.json
+powerbi/**/cache.abf

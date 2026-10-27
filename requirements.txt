@@ -1,0 +1,4 @@
+# Python 3.10+
+pandas>=2.2                    # limpeza e transformacao
+psycopg2-binary>=2.9           # conexao e carga no PostgreSQL
+pytest>=8.0                    # testes das funcoes de limpeza
