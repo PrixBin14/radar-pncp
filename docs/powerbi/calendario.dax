@@ -1,0 +1,34 @@
+// =====================================================================================
+// CALENDARIO (Modelagem > Nova tabela)
+// Os limites vem dos proprios dados (nada digitado): do 1o dia do ano da primeira
+// publicacao ate o ultimo dia do ano da ultima homologacao.
+// Depois de criar:
+//   * Nome do Mes  -> Classificar por coluna -> Mes Num
+//   * Ano-Mes      -> Classificar por coluna -> AnoMes Num
+//   * Tabela inteira -> Marcar como tabela de datas -> coluna Data
+// =====================================================================================
+Calendario =
+VAR DataInicial = MIN ( fato_item_contratado[data_publicacao] )
+VAR DataFinal =
+    MAX (
+        MAX ( fato_item_contratado[data_publicacao] ),
+        MAX ( fato_item_contratado[data_homologacao] )
+    )
+VAR Datas =
+    CALENDAR ( DATE ( YEAR ( DataInicial ), 1, 1 ), DATE ( YEAR ( DataFinal ), 12, 31 ) )
+RETURN
+    ADDCOLUMNS (
+        SELECTCOLUMNS ( Datas, "Data", [Date] ),
+        "Ano", YEAR ( [Data] ),
+        "Mes Num", MONTH ( [Data] ),
+        "Nome do Mes", FORMAT ( [Data], "mmm" ),
+        "Trimestre", "T" & QUARTER ( [Data] ),
+        "AnoMes Num", YEAR ( [Data] ) * 100 + MONTH ( [Data] ),
+        "Ano-Mes", FORMAT ( [Data], "yyyy-mm" )
+    )
+
+// Relacionamentos (Exibicao de modelo):
+//   Calendario[Data] 1 -> * fato_item_contratado[data_publicacao]    (ATIVO)
+//   Calendario[Data] 1 -> * fato_item_contratado[data_homologacao]   (INATIVO, pontilhado)
+// A inativa so e usada quando eu peco, com USERELATIONSHIP (veja a medida extra
+// "Volume por Mes de Homologacao" no arquivo medidas.dax).

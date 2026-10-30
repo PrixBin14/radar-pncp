@@ -1,0 +1,190 @@
+// =====================================================================================
+// MEDIDAS  -  todas na tabela "_Medidas" (Pagina Inicial > Inserir dados > tabela vazia)
+// Cada medida vai numa pasta de exibicao (Exibicao de modelo > Propriedades > Pasta):
+// P1 Economia | P2 Fornecedores | P3 Modalidades | P4 Ciclo | P5 Regional | P6 Perfil | Extras
+// Regra de ouro: percentual = DIVIDE(soma, soma). Nunca media de percentuais.
+// =====================================================================================
+
+
+// ---------- P1 ECONOMIA ---------------------------------------------------------------
+
+// [1] so o estimado dos itens comparaveis (Credenciamento e razao maluca ficam de fora)
+Valor Estimado Comparável =
+CALCULATE (
+    SUM ( fato_item_contratado[valor_total_estimado] ),
+    fato_item_contratado[comparavel] = 1
+)
+// formato: R$ moeda
+
+// [2] tudo que foi homologado (comparavel ou nao). E o "volume" das perguntas
+Volume Homologado =
+SUM ( fato_item_contratado[valor_total_homologado] )
+// formato: R$ moeda
+
+// [3] estimado - homologado, os dois so dos comparaveis (senao a conta fica injusta)
+Economia (R$) =
+VAR EstimadoComparavel = [Valor Estimado Comparável]
+VAR HomologadoComparavel =
+    CALCULATE ( [Volume Homologado], fato_item_contratado[comparavel] = 1 )
+RETURN
+    EstimadoComparavel - HomologadoComparavel
+// formato: R$ moeda
+
+// [4] o desagio: quanto % abaixo do estimado o governo pagou
+Economia % =
+DIVIDE ( [Economia (R$)], [Valor Estimado Comparável] )
+// formato: porcentagem, 2 casas
+
+// [5] quanto da base da pra usar na conta da economia
+% de Itens Comparáveis =
+VAR TotalItens = COUNTROWS ( fato_item_contratado )
+VAR ItensComparaveis =
+    CALCULATE ( COUNTROWS ( fato_item_contratado ), fato_item_contratado[comparavel] = 1 )
+RETURN
+    DIVIDE ( ItensComparaveis, TotalItens )
+// formato: porcentagem, 2 casas
+
+
+// ---------- P2 FORNECEDORES ------------------------------------------------------------
+
+// [6] fatia do fornecedor no bolo todo (o ALL tira o filtro de fornecedor so do denominador)
+Participação do Fornecedor % =
+VAR VolumeFornecedor = [Volume Homologado]
+VAR VolumeTotal =
+    CALCULATE ( [Volume Homologado], ALL ( dim_fornecedor ) )
+RETURN
+    DIVIDE ( VolumeFornecedor, VolumeTotal )
+// formato: porcentagem, 2 casas
+
+// [7] posicao do fornecedor (1o, 2o...). So aparece quando tem UM fornecedor na linha
+Ranking do Fornecedor =
+IF (
+    ISINSCOPE ( dim_fornecedor[ni_fornecedor] ),
+    RANKX ( ALL ( dim_fornecedor ), [Volume Homologado], , DESC, DENSE )
+)
+// formato: numero inteiro
+
+// [8] quanto os 10 maiores levam, juntos, do total
+Concentração Top 10 % =
+VAR Top10 =
+    TOPN ( 10, ALL ( dim_fornecedor[ni_fornecedor] ), [Volume Homologado], DESC )
+VAR VolumeTop10 =
+    CALCULATE ( [Volume Homologado], KEEPFILTERS ( Top10 ) )
+VAR VolumeTotal =
+    CALCULATE ( [Volume Homologado], ALL ( dim_fornecedor ) )
+RETURN
+    DIVIDE ( VolumeTop10, VolumeTotal )
+// formato: porcentagem, 2 casas
+
+
+// ---------- P3 MODALIDADES (serve tambem pra UF, regiao e perfil) ----------------------
+
+// [9] fatia da linha (modalidade, UF, perfil...) no total do visual
+Participação no Volume % =
+VAR VolumeLinha = [Volume Homologado]
+VAR VolumeTotal =
+    CALCULATE ( [Volume Homologado], ALLSELECTED () )
+RETURN
+    DIVIDE ( VolumeLinha, VolumeTotal )
+// formato: porcentagem, 2 casas
+
+// [10] a linha economiza mais ou menos que a media geral? (em pontos percentuais)
+Deságio vs Média Geral (p.p.) =
+VAR EconomiaLinha = [Economia %]
+VAR EconomiaGeral =
+    CALCULATE ( [Economia %], REMOVEFILTERS () )
+RETURN
+    IF ( NOT ISBLANK ( EconomiaLinha ), ( EconomiaLinha - EconomiaGeral ) * 100 )
+// formato: NUMERO DECIMAL com 1 casa (nao porcentagem! senao 5 p.p. vira 500%)
+
+
+// ---------- P4 CICLO -------------------------------------------------------------------
+
+// [11] media de dias entre publicar e homologar. O AVERAGEX percorre so os itens com ciclo
+Ciclo Médio (dias) =
+VAR ItensComCiclo =
+    FILTER ( fato_item_contratado, NOT ISBLANK ( fato_item_contratado[dias_ciclo] ) )
+RETURN
+    AVERAGEX ( ItensComCiclo, fato_item_contratado[dias_ciclo] )
+// formato: numero decimal, 1 casa
+
+// [12] o pior caso
+Ciclo Máximo (dias) =
+MAX ( fato_item_contratado[dias_ciclo] )
+// formato: numero inteiro
+
+// [13] itens que ficaram sem data de homologacao (homologou antes de publicar)
+Itens sem Ciclo =
+VAR TotalItens = COUNTROWS ( fato_item_contratado )
+VAR ItensComCiclo = COUNT ( fato_item_contratado[dias_ciclo] )   // COUNT ignora vazio
+RETURN
+    TotalItens - ItensComCiclo
+// formato: numero inteiro
+
+
+// ---------- P5 REGIONAL ----------------------------------------------------------------
+
+// [14] quantos CNPJ de orgao diferentes (cada um e uma unidade compradora).
+// Conto pela fato (sk_orgao) pra respeitar o filtro de UF/regiao
+Qtd Unidades Compradoras =
+DISTINCTCOUNT ( fato_item_contratado[sk_orgao] )
+// formato: numero inteiro
+
+
+// ---------- P6 PERFIL ------------------------------------------------------------------
+
+// [15] quanto custa, em media, cada item
+Ticket Médio por Item (R$) =
+DIVIDE ( [Volume Homologado], COUNTROWS ( fato_item_contratado ) )
+// formato: R$ moeda
+
+
+// ---------- EXTRAS (deixam a historia mais rica) ---------------------------------------
+
+Qtd Itens =
+COUNTROWS ( fato_item_contratado )
+
+Itens com Ciclo =
+COUNT ( fato_item_contratado[dias_ciclo] )
+// usada no filtro do visual da P4 (so orgaos com 5 ou mais)
+
+// SUMX percorre linha a linha e soma 1 quando o homologado passou do estimado
+Itens com Sobrepreço =
+SUMX (
+    fato_item_contratado,
+    IF (
+        fato_item_contratado[comparavel] = 1
+            && fato_item_contratado[valor_total_homologado] > fato_item_contratado[valor_total_estimado],
+        1,
+        0
+    )
+)
+
+Volume Mês Anterior =
+CALCULATE ( [Volume Homologado], DATEADD ( Calendario[Data], -1, MONTH ) )
+
+Variação Mensal % =
+VAR Atual = [Volume Homologado]
+VAR Anterior = [Volume Mês Anterior]
+RETURN
+    DIVIDE ( Atual - Anterior, Anterior )
+
+Volume Acumulado no Ano =
+TOTALYTD ( [Volume Homologado], Calendario[Data] )
+
+// usa a relacao INATIVA (data de homologacao) so dentro desta medida
+Volume por Mês de Homologação =
+CALCULATE (
+    [Volume Homologado],
+    USERELATIONSHIP ( Calendario[Data], fato_item_contratado[data_homologacao] )
+)
+
+// titulo do tooltip muda conforme o que esta embaixo do mouse
+Título Dinâmico do Tooltip =
+VAR Modalidade = SELECTEDVALUE ( dim_modalidade[nome_modalidade] )
+VAR UF = SELECTEDVALUE ( dim_localidade[uf_nome] )
+VAR Regiao = SELECTEDVALUE ( dim_localidade[regiao] )
+VAR Perfil = SELECTEDVALUE ( fato_item_contratado[perfil_gasto] )
+VAR Orgao = SELECTEDVALUE ( dim_orgao[nome_orgao] )
+RETURN
+    COALESCE ( Modalidade, UF, Regiao, Perfil, Orgao, "Visão geral" )
