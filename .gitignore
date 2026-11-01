@@ -17,3 +17,7 @@ __pycache__/
 *.pbix.bak
 powerbi/**/localSettings.json
 powerbi/**/cache.abf
+
+# ambiente virtual e projeto de desenvolvimento do Power BI (regeneravel)
+venv/
+powerbi/_dev/
