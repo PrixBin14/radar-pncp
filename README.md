@@ -2,7 +2,7 @@
 
 Projeto de conclusão do Módulo 2 do curso **Análise de Dados com Python – PostgreSQL**.
 
-📺 **Vídeo da apresentação:** _[cole aqui o link do Google Drive]_
+📺 **Vídeo da apresentação:** [Assistir no Google Drive](https://drive.google.com/file/d/1u_p2VmnD5vac-cY14i4od107lkfmmPmK/view?usp=drive_link)
 
 ---
 
