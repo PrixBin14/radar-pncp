@@ -228,7 +228,7 @@ Consultas em `sql/02_perguntas.sql` e as mesmas respostas no dashboard (as medid
 
 ## 10. Tecnologias
 
-Python 3 (pandas, psycopg2) · PostgreSQL 16 + pgAdmin 4 · Power BI Desktop (DAX) · Git/GitHub · VS Code
+Python 3 (pandas, psycopg2) · PostgreSQL 18 + pgAdmin 4 · Power BI Desktop (DAX) · Git/GitHub · VS Code
 
 ---
 
