@@ -205,7 +205,7 @@ Consultas em `sql/02_perguntas.sql` e as mesmas respostas no dashboard (as medid
 - **15 medidas obrigatórias + extras**, todas na tabela `_Medidas`, separadas em pastas por pergunta (P1 a P6), com `VAR/RETURN`, `CALCULATE`, `DIVIDE`, `RANKX`, `TOPN`, `KEEPFILTERS` e iteradoras (`SUMX`, `AVERAGEX`).
 - **6 páginas**, uma por pergunta, sempre na mesma estrutura: **pergunta → números → conclusão**.
 - **Menu retrátil** com botões e indicadores (bookmarks) e **página de tooltip** com título dinâmico.
-- **Design:** tema próprio (`docs/powerbi/tema_controladoria.json`), grid alinhado, azul como cor principal e laranja só pra destacar o que importa (leitura em Z: KPIs no topo, detalhe embaixo, conclusão no rodapé).
+- **Design:** tema próprio (`docs/powerbi/tema_controladoria.json`), grid alinhado, azul como cor principal e roxo só pra destacar o que importa (leitura em Z: KPIs no topo, detalhe embaixo, conclusão no rodapé).
 
 ---
 

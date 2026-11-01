@@ -1,11 +1,11 @@
 {
   "name": "Controladoria PNCP",
-  "dataColors": ["#1F4E79", "#2E86AB", "#F18F01", "#6C757D", "#A23B72", "#3B8B5A", "#C73E1D", "#9AA5B1"],
+  "dataColors": ["#1F4E79", "#2E86AB", "#6A3D9A", "#6C757D", "#A23B72", "#3B8B5A", "#C73E1D", "#9AA5B1"],
   "background": "#FFFFFF",
   "foreground": "#1B2631",
   "tableAccent": "#1F4E79",
   "good": "#3B8B5A",
-  "neutral": "#F18F01",
+  "neutral": "#6A3D9A",
   "bad": "#C73E1D",
   "maximum": "#1F4E79",
   "center": "#DCE6F0",
